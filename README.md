@@ -1,22 +1,26 @@
 # studyzflow 🎓⚡
 
-**studyzflow** is an intelligent, modern academic productivity suite built with React 19, TypeScript, Tailwind CSS, and Capacitor for Android (Android 14–16 / OriginOS 6) and Web.
+**studyzflow** is an intelligent, modern academic productivity suite built with React 19, TypeScript, Tailwind CSS, and Capacitor for Android (Android 13+ ) and Web.
 
 ---
 
 ## 📸 Screenshots Showcase
 
 <p align="center">
-  <img src="<img width="387" height="861" alt="image" src="https://github.com/user-attachments/assets/a0784fd9-b4ed-4340-8514-514c5a2306c0" />
+  <img src="<img width="387" height="861" alt="image" src="<img width="1917" height="971" alt="dashboard" src="https://github.com/user-attachments/assets/70a80701-5d62-4d1e-ada8-65b69b369128" />
 " />
-  <img src="<img width="390" height="852" alt="image" src="https://github.com/user-attachments/assets/200c301c-e87d-46eb-89b8-1ac9d2d2c600" />
+" />
+  <img src="<img width="390" height="852" alt="image" src="<img width="577" height="1036" alt="mob_dash" src="https://github.com/user-attachments/assets/623263a9-e921-45fd-9bf2-113bedb5080e" />
+" />
 " />
 </p>
 
 <p align="center">
-  <img src="<img width="381" height="851" alt="image" src="https://github.com/user-attachments/assets/55365c7d-07e0-491f-825e-1f588844e318" />
+  <img src="<img width="381" height="851" alt="image" src="<img width="1487" height="757" alt="tasks page" src="https://github.com/user-attachments/assets/df19e2cb-0550-48cb-a960-e7db1c02ca00" />
 " />
-  <img src="<img width="382" height="852" alt="image" src="https://github.com/user-attachments/assets/9a601847-4353-41b8-91e1-f8286d3a355b" />
+" />
+  <img src="<img width="382" height="852" alt="image" src="<img width="567" height="1015" alt="timers page" src="https://github.com/user-attachments/assets/be3d854f-cb66-433d-9d61-b81c4f98db5b" />
+" />
 %" />
 </p>
 
