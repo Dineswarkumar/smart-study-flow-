@@ -8,8 +8,6 @@ import {
   Calendar, 
   User, 
   Settings as SettingsIcon, 
-  Sparkles,
-  CalendarCheck,
   X,
   Radio,
   Edit2
@@ -63,10 +61,11 @@ export const Sidebar: React.FC = () => {
                 setMobileMenuOpen(false);
               }}
             >
-              <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#4338ca] to-[#6366f1] text-white flex items-center justify-center shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-                <CalendarCheck className="w-5 h-5" />
-                <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 fill-current text-amber-300" />
-              </div>
+              <img
+                src="/logo.svg"
+                alt="studyzflow logo"
+                className="w-10 h-10 rounded-2xl shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform"
+              />
               <div>
                 <h1 className="text-xl font-black tracking-tight font-headline flex items-center gap-1">
                   <span className="text-slate-900 dark:text-white">studyz</span>

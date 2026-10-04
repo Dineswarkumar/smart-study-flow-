@@ -4,41 +4,28 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    
-    <!-- Outer Glow / Halo Aura -->
-    <path
-        android:fillColor="#30FFFFFF"
-        android:pathData="M54,26 C68,26 80,38 80,52 C80,66 68,78 54,78 C40,78 28,66 28,52 C28,38 40,26 54,26 Z" />
 
-    <!-- Graduation Cap / Diamond Top -->
+    <!-- Open progress ring -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M75.67,50.18 A22,22 0 1 1 57.82,32.33" />
+
+    <!-- Flow arrowhead -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,34 L82,46 L54,58 L26,46 Z" />
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:pathData="M64.7,33.5 L56.78,38.24 L58.86,26.42 Z" />
 
-    <!-- Cap Underside / Base -->
+    <!-- Check mark sweeping out of the ring -->
     <path
-        android:fillColor="#E0E7FF"
-        android:pathData="M38,53 L38,65 C38,71 45,76 54,76 C63,76 70,71 70,65 L70,53 L54,60 Z" />
-
-    <!-- Tassel String -->
-    <path
-        android:strokeColor="#FBBF24"
-        android:strokeWidth="2.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="7"
         android:strokeLineCap="round"
-        android:pathData="M54,46 Q74,48 76,60" />
-
-    <!-- Tassel Tip -->
-    <path
-        android:fillColor="#F59E0B"
-        android:pathData="M74,60 L78,60 L79,68 L73,68 Z" />
-
-    <!-- Glowing Academic Sparkle Top-Right -->
-    <path
-        android:fillColor="#FBBF24"
-        android:pathData="M78,32 Q78,38 84,38 Q78,38 78,44 Q78,38 72,38 Q78,38 78,32 Z" />
-
-    <!-- Small Sparkle Bottom-Left -->
-    <path
-        android:fillColor="#FDE68A"
-        android:pathData="M30,62 Q30,66 34,66 Q30,66 30,70 Q30,66 26,66 Q30,66 30,62 Z" />
+        android:strokeLineJoin="round"
+        android:pathData="M42,55 L50,63 L72,38" />
 </vector>

@@ -4,30 +4,25 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Graduation Cap Top -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,34 L82,46 L54,58 L26,46 Z" />
 
-    <!-- Cap Base -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M38,53 L38,65 C38,71 45,76 54,76 C63,76 70,71 70,65 L70,53 L54,60 Z" />
-
-    <!-- Tassel String -->
-    <path
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2.5"
+        android:strokeColor="#000000"
+        android:strokeWidth="7"
         android:strokeLineCap="round"
-        android:pathData="M54,46 Q74,48 76,60" />
+        android:strokeLineJoin="round"
+        android:pathData="M75.67,50.18 A22,22 0 1 1 57.82,32.33" />
 
-    <!-- Tassel Tip -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M74,60 L78,60 L79,68 L73,68 Z" />
+        android:fillColor="#000000"
+        android:strokeColor="#000000"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:pathData="M64.7,33.5 L56.78,38.24 L58.86,26.42 Z" />
 
-    <!-- Academic Sparkle -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M78,32 Q78,38 84,38 Q78,38 78,44 Q78,38 72,38 Q78,38 78,32 Z" />
+        android:strokeColor="#000000"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M42,55 L50,63 L72,38" />
 </vector>
