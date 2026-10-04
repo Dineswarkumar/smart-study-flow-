@@ -49,34 +49,39 @@
 
 ---
 
-## ✨ Phase 4 Highlights & Key Features
+## ✨ Phase 5 Highlights & Key Features
 
-### 1. 🔮 3D Draining Spherical Liquid Glass Timer
+### 1. 🎓 Daily Attendance Tracker & 75% Target Analytics
+- **Timetable-Linked Daily Marking**: Mark scheduled lectures with one tap as **Present**, **Absent**, **Cancelled**, or **Holiday**.
+- **Teacher Cancellations Don't Penalize You**: Cancelled classes and holidays are automatically excluded from the denominator.
+- **Extra & Makeup Classes**: Support for unscheduled lectures or weekend makeup sessions with **Periods Multipliers** (e.g. 2-hour or 3-hour practical labs).
+- **75% Minimum Reachability Formula**: Real-time mathematical guidance telling you exactly how many upcoming classes you can safely miss, or how many you must attend to regain 75% exam eligibility.
+- **Mid-Semester Catchup Mode**: Enter past attendance counts (`Attended / Total`) to seamlessly sync with existing university ERP portals.
+
+### 2. 📊 Academic Dashboard Integration
+- **5th Metric Card**: Real-time overall attendance percentage and attended/conducted counts in the top Aurora stat row.
+- **1-Tap Schedule Quick-Marking**: Mark today's classes directly from the Dashboard schedule with celebratory confetti.
+- **Attendance Health Monitor**: Live progress bar with a 75% requirement tick marker and instant risk alerts.
+
+### 3. ⏰ Loud Alarms & Android Notification Channels
+- **High-Priority Android Channel**: Configured `studyflow_alarms_v1` with max importance (5), custom vibration, and sound.
+- **Rich Harmonic Audio Engine**: Multi-tone Web Audio chime loop that rings continuously until dismissed.
+- **Foreground Ringing Modal**: Global popup with animated ringing bell, audio chime, **Snooze (+5m)**, and **Dismiss**.
+
+### 4. 🔮 3D Draining Spherical Liquid Glass Timer
 - **Realistic Physics & Depletion**: The 3D liquid sphere starts **100% full** and smoothly drains down to **0% (empty)** as the countdown completes.
 - **Convex Glass Aesthetics**: Specular highlights, depth rings, rim lighting, glare arcs, and animated rising bubbles.
 - **Color Themes**: Electric Indigo, Sunset Orange, Emerald Focus, Rose Bloom, and Cosmic Violet presets.
-- **Native Alarms**: Configure daily or single-run study alarms with audio chimes.
 
-### 2. 📊 Academic Command Center (Dashboard)
-- **Live Day & Date Display**: Real-time formatted academic calendar pill (`📅 Tuesday, August 25, 2026`).
-- **Quick Schedule & Task Overview**: Daily lecture schedule, pending priority tasks, streak count, and daily focus stats.
-- **Fast Actions**: Quick modal to add tasks or jump straight into study flow.
+### 5. 🎨 Custom Branding & Native Splash Screens
+- **Modern StudyzFlow Vector Logo**: Custom open progress ring, flow arrow, and checkmark replacing the template Capacitor icon.
+- **11 High-Res Android Splash Screens**: Custom obsidian slate splash screens for all phone and tablet screen densities.
+- **AAPT2 Adaptive Icons**: Material You dynamic theming and universal vector compatibility.
 
-### 3. 📝 Tasks & Full-Page Rich Note Editor
+### 6. 📝 Tasks & Full-Page Rich Note Editor
 - **Date & Time Tracking**: Tasks support due dates with specific due times (e.g. `Aug 25, 2026 at 5:00 PM`).
-- **Enlarged Formatting Toolbar**: Comfortable, high-contrast buttons for Bold, Italic, Underline, Headings (H1/H2), Quotes, Code, Alignment, Lists, Tables, and Checklists.
+- **Enlarged Formatting Toolbar**: High-contrast controls for Bold, Italic, Headings, Quotes, Code, Alignment, Lists, Tables, and Checklists.
 - **Subtasks & Categorization**: Subtasks with progress bars, priority flags (Important / General), and tag filtering.
-
-### 4. 📅 Weekly Interactive Timetable
-- Multi-day class schedule with lecture/lab/seminar badges, room numbers, instructors, and custom color accents.
-
-### 5. 🔔 Native Notifications & Permissions
-- **Android 13+ Notification Support**: Runtime notification permissions and Capacitor Local Notifications.
-- **Instant Test Alerts**: One-tap "Send Test Alert" button in Settings to verify device sound and notification banners.
-
-### 6. 📱 Android 13+ Native Ready
-- **Adaptive Vector Icons**: Clean `ic_launcher_foreground.xml` and `ic_launcher_monochrome.xml` for Material You dynamic theming.
-- Edge-to-edge layout, dark theme optimization, and touch-first interactions.
 
 ### 7. ☁️ Real-time Cloud Sync & Offline-First
 - **Firebase Auth & Firestore**: Multi-device live synchronization between PC and Android.
