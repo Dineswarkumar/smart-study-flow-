@@ -13,7 +13,8 @@ import {
   Settings as SettingsIcon,
   Sparkles,
   Flame,
-  Plus
+  Plus,
+  CalendarCheck
 } from 'lucide-react';
 import { QuickTaskModal } from '../tasks/QuickTaskModal';
 
@@ -39,6 +40,12 @@ export const Header: React.FC = () => {
           title: 'Dashboard',
           subtitle: 'Academic Command Center',
           icon: LayoutDashboard,
+        };
+      case 'attendance':
+        return {
+          title: 'Attendance Hub',
+          subtitle: 'Daily class marking & 75% criteria tracker',
+          icon: CalendarCheck,
         };
       case 'notes':
       case 'tasks':

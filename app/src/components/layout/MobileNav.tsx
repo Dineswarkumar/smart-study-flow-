@@ -1,17 +1,17 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import type { ActiveTab } from '../../types';
-import { LayoutDashboard, CheckSquare, Calendar, Timer, Settings } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, Calendar, Timer, CalendarCheck } from 'lucide-react';
 
 export const MobileNav: React.FC = () => {
   const { activeTab, setActiveTab } = useApp();
 
   const navItems: { id: ActiveTab; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
+    { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
     { id: 'schedule', label: 'Schedule', icon: Calendar },
     { id: 'notes', label: 'Tasks', icon: CheckSquare },
     { id: 'timer', label: 'Focus', icon: Timer },
-    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (

@@ -9,6 +9,8 @@ import { Schedule } from './components/schedule/Schedule';
 import { TimerAndAlarm } from './components/timer/TimerAndAlarm';
 import { Profile } from './components/profile/Profile';
 import { Settings } from './components/settings/Settings';
+import { Attendance } from './components/attendance/Attendance';
+import { AlarmRingingModal } from './components/timer/AlarmRingingModal';
 
 const MainContent: React.FC = () => {
   const { activeTab } = useApp();
@@ -17,6 +19,8 @@ const MainContent: React.FC = () => {
     switch (activeTab) {
       case 'dashboard':
         return <Dashboard />;
+      case 'attendance':
+        return <Attendance />;
       case 'notes':
       case 'tasks':
         return <NotesAndTasks />;
@@ -49,6 +53,9 @@ const MainContent: React.FC = () => {
 
       {/* Mobile Navigation */}
       <MobileNav />
+
+      {/* Global Alarm Sound & Notification Modal */}
+      <AlarmRingingModal />
     </div>
   );
 };

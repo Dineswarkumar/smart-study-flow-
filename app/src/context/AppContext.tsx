@@ -9,10 +9,12 @@ import type {
   AlarmItem,
   AppSettings,
   ThemeMode,
-  ThemePreset
+  ThemePreset,
+  AttendanceRecord,
+  SubjectAttendanceGoal
 } from '../types';
 import { storage, subscribeToSync } from '../services/storage';
-import { cancelAlarmNotification, scheduleAlarmNotification } from '../services/notifications';
+import { cancelAlarmNotification, scheduleAlarmNotification, playRichAlarmChime } from '../services/notifications';
 import {
   firebaseConfigured,
   subscribeToFirebaseAuth,
@@ -55,6 +57,14 @@ interface AppContextType {
   updateAlarm: (id: string, updated: Partial<AlarmItem>) => void;
   deleteAlarm: (id: string) => void;
   toggleAlarm: (id: string) => void;
+  attendance: AttendanceRecord[];
+  attendanceGoals: SubjectAttendanceGoal[];
+  markAttendance: (record: Omit<AttendanceRecord, 'id' | 'createdAt'>) => void;
+  updateAttendanceRecord: (id: string, updated: Partial<AttendanceRecord>) => void;
+  deleteAttendanceRecord: (id: string) => void;
+  saveAttendanceGoal: (goal: SubjectAttendanceGoal) => void;
+  ringingAlarm: { id: string; label: string } | null;
+  dismissRingingAlarm: () => void;
   settings: AppSettings;
   updateSettings: (updated: Partial<AppSettings>) => void;
   toggleThemeMode: () => void;
@@ -91,6 +101,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [sessions, setSessions] = useState<FocusSession[]>(storage.getSessions);
   const [alarms, setAlarms] = useState<AlarmItem[]>(storage.getAlarms);
   const [settings, setSettings] = useState<AppSettings>(storage.getSettings);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>(storage.getAttendance);
+  const [attendanceGoals, setAttendanceGoals] = useState<SubjectAttendanceGoal[]>(storage.getAttendanceGoals);
+  const [ringingAlarm, setRingingAlarm] = useState<{ id: string; label: string } | null>(null);
+  const activeChimeRef = React.useRef<{ stop: () => void } | null>(null);
+  const lastTriggeredAlarmMinuteRef = React.useRef<string>('');
 
   const [lastSyncTime, setLastSyncTime] = useState<string>(new Date().toLocaleTimeString());
   const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'offline'>('synced');
@@ -108,6 +123,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSessions(storage.getSessions());
     setAlarms(storage.getAlarms());
     setSettings(storage.getSettings());
+    setAttendance(storage.getAttendance());
+    setAttendanceGoals(storage.getAttendanceGoals());
     setLastCloudUpload(storage.getLastCloudUpload());
     setLastCloudDownload(storage.getLastCloudDownload());
     setLastSyncTime(new Date().toLocaleTimeString());
@@ -363,6 +380,89 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (current) updateAlarm(id, { enabled: !current.enabled });
   };
 
+  const markAttendance = (record: Omit<AttendanceRecord, 'id' | 'createdAt'>) => {
+    const existingIndex = attendance.findIndex(a => 
+      a.date === record.date && 
+      (record.scheduleId ? a.scheduleId === record.scheduleId : (!record.isExtraClass && a.subjectName === record.subjectName && a.time === record.time))
+    );
+
+    const nowIso = new Date().toISOString();
+    let updated: AttendanceRecord[];
+    if (existingIndex >= 0 && !record.isExtraClass) {
+      updated = [...attendance];
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        ...record,
+      };
+    } else {
+      const newRec: AttendanceRecord = {
+        ...record,
+        id: `att_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        createdAt: nowIso,
+      };
+      updated = [newRec, ...attendance];
+    }
+    setAttendance(updated);
+    storage.saveAttendance(updated);
+  };
+
+  const updateAttendanceRecord = (id: string, updatedFields: Partial<AttendanceRecord>) => {
+    const updated = attendance.map(a => a.id === id ? { ...a, ...updatedFields } : a);
+    setAttendance(updated);
+    storage.saveAttendance(updated);
+  };
+
+  const deleteAttendanceRecord = (id: string) => {
+    const updated = attendance.filter(a => a.id !== id);
+    setAttendance(updated);
+    storage.saveAttendance(updated);
+  };
+
+  const saveAttendanceGoal = (goal: SubjectAttendanceGoal) => {
+    const existingIndex = attendanceGoals.findIndex(g => g.subjectName.toLowerCase() === goal.subjectName.toLowerCase());
+    let updated: SubjectAttendanceGoal[];
+    if (existingIndex >= 0) {
+      updated = [...attendanceGoals];
+      updated[existingIndex] = goal;
+    } else {
+      updated = [...attendanceGoals, goal];
+    }
+    setAttendanceGoals(updated);
+    storage.saveAttendanceGoals(updated);
+  };
+
+  const dismissRingingAlarm = () => {
+    if (activeChimeRef.current) {
+      activeChimeRef.current.stop();
+      activeChimeRef.current = null;
+    }
+    setRingingAlarm(null);
+  };
+
+  // In-app alarm watcher: check every 5 seconds for scheduled alarm triggers
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const currentHM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      if (lastTriggeredAlarmMinuteRef.current === currentHM) return;
+
+      const matchingAlarm = alarms.find(a => a.enabled && a.time === currentHM);
+      if (matchingAlarm) {
+        lastTriggeredAlarmMinuteRef.current = currentHM;
+        if (settings.soundEnabled) {
+          activeChimeRef.current?.stop();
+          activeChimeRef.current = playRichAlarmChime(settings.alarmVolume);
+        }
+        setRingingAlarm({ id: matchingAlarm.id, label: matchingAlarm.label });
+        if (matchingAlarm.repeat === 'once') {
+          updateAlarm(matchingAlarm.id, { enabled: false });
+        }
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [alarms, settings.soundEnabled, settings.alarmVolume]);
+
   const updateSettings = (updated: Partial<AppSettings>) => {
     const newSettings = { ...settings, ...updated };
     newSettings.pomodoroMinutes = Math.min(120, Math.max(1, Number(newSettings.pomodoroMinutes) || 25));
@@ -428,6 +528,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       updateAlarm,
       deleteAlarm,
       toggleAlarm,
+      attendance,
+      attendanceGoals,
+      markAttendance,
+      updateAttendanceRecord,
+      deleteAttendanceRecord,
+      saveAttendanceGoal,
+      ringingAlarm,
+      dismissRingingAlarm,
       settings,
       updateSettings,
       toggleThemeMode,

@@ -1,4 +1,4 @@
-export type ActiveTab = 'dashboard' | 'notes' | 'tasks' | 'schedule' | 'timer' | 'profile' | 'settings';
+export type ActiveTab = 'dashboard' | 'attendance' | 'notes' | 'tasks' | 'schedule' | 'timer' | 'profile' | 'settings';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type ThemePreset = 'candy' | 'glacier';
@@ -99,4 +99,27 @@ export interface AppSettings {
   shortBreakMinutes: number;
   autoSync: boolean;
   deviceSyncId: string;
+}
+
+export type AttendanceStatus = 'present' | 'absent' | 'cancelled' | 'holiday';
+
+export interface AttendanceRecord {
+  id: string;              // e.g. "att_2026-10-04_class-1" or "att_extra_1728000"
+  date: string;            // YYYY-MM-DD
+  subjectName: string;     // Matches class schedule or custom course name
+  scheduleId?: string;     // Linked to ClassSchedule if scheduled class
+  isExtraClass: boolean;   // True if extra/makeup lecture
+  status: AttendanceStatus;// present | absent | cancelled | holiday
+  periodsCount: number;    // Default 1 (e.g., 2 or 3 for multi-hour labs)
+  time?: string;           // e.g. "10:00 - 11:30"
+  location?: string;       // e.g. "Lab 10-A"
+  notes?: string;          // e.g. "Makeup lecture"
+  createdAt: string;
+}
+
+export interface SubjectAttendanceGoal {
+  subjectName: string;
+  targetPercentage: number;// Default 75%
+  initialAttended: number; // Historical catchup count
+  initialTotal: number;    // Historical total count
 }

@@ -1,4 +1,4 @@
-import type { StudentProfile, TaskItem, NoteItem, ClassSchedule, FocusSession, AppSettings, AlarmItem, CustomTimerItem } from '../types';
+import type { StudentProfile, TaskItem, NoteItem, ClassSchedule, FocusSession, AppSettings, AlarmItem, CustomTimerItem, AttendanceRecord, SubjectAttendanceGoal } from '../types';
 
 const STORAGE_KEYS = {
   PROFILE: 'studyflow_profile',
@@ -9,8 +9,13 @@ const STORAGE_KEYS = {
   SETTINGS: 'studyflow_settings',
   ALARMS: 'studyflow_alarms',
   CUSTOM_TIMERS: 'studyflow_custom_timers',
+  ATTENDANCE: 'studyflow_attendance',
+  ATTENDANCE_GOALS: 'studyflow_attendance_goals',
 };
 const PENDING_CLOUD_SYNC_KEY = 'studyflow_pending_cloud_sync';
+
+export const defaultAttendance: AttendanceRecord[] = [];
+export const defaultAttendanceGoals: SubjectAttendanceGoal[] = [];
 
 const localChangeListeners = new Set<() => void>();
 
@@ -354,6 +359,20 @@ export const storage = {
     localStorage.setItem(STORAGE_KEYS.CUSTOM_TIMERS, JSON.stringify(timers));
     notifySync();
   },
+  getAttendance: (): AttendanceRecord[] => {
+    return readStored(STORAGE_KEYS.ATTENDANCE, defaultAttendance, isObjectArray) as AttendanceRecord[];
+  },
+  saveAttendance: (attendance: AttendanceRecord[]) => {
+    localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
+    notifySync();
+  },
+  getAttendanceGoals: (): SubjectAttendanceGoal[] => {
+    return readStored(STORAGE_KEYS.ATTENDANCE_GOALS, defaultAttendanceGoals, isObjectArray) as SubjectAttendanceGoal[];
+  },
+  saveAttendanceGoals: (goals: SubjectAttendanceGoal[]) => {
+    localStorage.setItem(STORAGE_KEYS.ATTENDANCE_GOALS, JSON.stringify(goals));
+    notifySync();
+  },
   getAllData: () => ({
     profile: storage.getProfile(),
     tasks: storage.getTasks(),
@@ -363,6 +382,8 @@ export const storage = {
     settings: storage.getSettings(),
     alarms: storage.getAlarms(),
     customTimers: storage.getCustomTimers(),
+    attendance: storage.getAttendance(),
+    attendanceGoals: storage.getAttendanceGoals(),
   }),
   hasPendingCloudSync: () => localStorage.getItem(PENDING_CLOUD_SYNC_KEY) === '1',
   clearPendingCloudSync: () => localStorage.removeItem(PENDING_CLOUD_SYNC_KEY),
@@ -468,6 +489,35 @@ export const storage = {
       });
       storage.saveCustomTimers(Array.from(timerMap.values()));
 
+      // 7. Merge Attendance Records (Deduplicate by ID, keep newer createdAt)
+      const localAttendance = storage.getAttendance();
+      const remoteAttendance = (remote.attendance && Array.isArray(remote.attendance) ? remote.attendance : []) as AttendanceRecord[];
+      const attMap = new Map<string, AttendanceRecord>();
+      localAttendance.forEach(a => attMap.set(a.id, a));
+      remoteAttendance.forEach(ra => {
+        if (!attMap.has(ra.id)) {
+          attMap.set(ra.id, ra);
+        } else {
+          const local = attMap.get(ra.id)!;
+          if (new Date(ra.createdAt || 0).getTime() >= new Date(local.createdAt || 0).getTime()) {
+            attMap.set(ra.id, ra);
+          }
+        }
+      });
+      storage.saveAttendance(Array.from(attMap.values()));
+
+      // 8. Merge Attendance Goals (Deduplicate by subjectName)
+      const localGoals = storage.getAttendanceGoals();
+      const remoteGoals = (remote.attendanceGoals && Array.isArray(remote.attendanceGoals) ? remote.attendanceGoals : []) as SubjectAttendanceGoal[];
+      const goalMap = new Map<string, SubjectAttendanceGoal>();
+      localGoals.forEach(g => goalMap.set(g.subjectName.toLowerCase(), g));
+      remoteGoals.forEach(rg => {
+        if (!goalMap.has(rg.subjectName.toLowerCase())) {
+          goalMap.set(rg.subjectName.toLowerCase(), rg);
+        }
+      });
+      storage.saveAttendanceGoals(Array.from(goalMap.values()));
+
       notifySync();
       return true;
     } catch {
@@ -486,7 +536,9 @@ export const storage = {
         (parsed.schedule !== undefined && !isObjectArray(parsed.schedule)) ||
         (parsed.sessions !== undefined && !isObjectArray(parsed.sessions)) ||
         (parsed.settings !== undefined && !isRecord(parsed.settings)) ||
-        (parsed.customTimers !== undefined && !isObjectArray(parsed.customTimers));
+        (parsed.customTimers !== undefined && !isObjectArray(parsed.customTimers)) ||
+        (parsed.attendance !== undefined && !isObjectArray(parsed.attendance)) ||
+        (parsed.attendanceGoals !== undefined && !isObjectArray(parsed.attendanceGoals));
 
       if (hasInvalidSection) return false;
 
@@ -498,6 +550,8 @@ export const storage = {
       if (parsed.settings) storage.saveSettings({ ...defaultSettings, ...parsed.settings });
       if (parsed.alarms) storage.saveAlarms(parsed.alarms as AlarmItem[]);
       if (parsed.customTimers) storage.saveCustomTimers(parsed.customTimers as CustomTimerItem[]);
+      if (parsed.attendance) storage.saveAttendance(parsed.attendance as AttendanceRecord[]);
+      if (parsed.attendanceGoals) storage.saveAttendanceGoals(parsed.attendanceGoals as SubjectAttendanceGoal[]);
       notifySync();
       return true;
     } catch {
