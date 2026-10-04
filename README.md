@@ -108,7 +108,7 @@
 ### 2. Run the Web Application
 ```bash
 # Clone the repository
-git clone https://github.com/dineswarakumar062/smart-study-flow-.git
+git clone https://github.com/Dineswarkumar/smart-study-flow-.git
 cd smart-study-flow-
 
 # Navigate into app and install dependencies
