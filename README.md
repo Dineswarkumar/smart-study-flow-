@@ -1,26 +1,52 @@
+<p align="center">
+  <img src="app/public/logo.svg" alt="studyzflow logo" width="120" />
+</p>
+
 # studyzflow 🎓⚡
 
-**studyzflow** is an intelligent, modern academic productivity suite built with React 19, TypeScript, Tailwind CSS, and Capacitor for Android (Android 14–16 / OriginOS 6) and Web.
+**studyzflow** is an intelligent, modern academic productivity suite built with React 19, TypeScript, Tailwind CSS, and Capacitor for Android (Android 13+) and Web.
+
+🌐 **Live Web App:** [smart-study-flow-7bbb.vercel.app](https://smart-study-flow-7bbb.vercel.app/)
 
 ---
 
-## 📸 Screenshots Showcase
+## 📸 Screenshots
+
+### 🖥️ Web (Desktop)
 
 <p align="center">
-  <img src="<img width="387" height="861" alt="image" src="https://github.com/user-attachments/assets/a0784fd9-b4ed-4340-8514-514c5a2306c0" />
-" />
-  <img src="<img width="390" height="852" alt="image" src="https://github.com/user-attachments/assets/200c301c-e87d-46eb-89b8-1ac9d2d2c600" />
-" />
+  <img src="docs/screenshots/dashboard-desktop.png" alt="Dashboard – Academic Command Center" width="100%" />
+  <br/><sub><b>Dashboard</b> — today's classes, priority tasks, streak &amp; GPA at a glance</sub>
 </p>
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/timetable-desktop.png" alt="Weekly Timetable" />
+      <br/><sub><b>Weekly Timetable</b> — manual add or AI scan</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/notes-desktop.png" alt="Tasks and Notes" />
+      <br/><sub><b>Tasks &amp; Notes</b> — tags, pins &amp; importance filters</sub>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="docs/screenshots/settings-desktop.png" alt="Settings and Backup" width="75%" />
+      <br/><sub><b>Settings &amp; Backup</b> — notifications, cloud sync, JSON export/import</sub>
+    </td>
+  </tr>
+</table>
+
+### 📱 Android
 
 <p align="center">
-  <img src="<img width="381" height="851" alt="image" src="https://github.com/user-attachments/assets/55365c7d-07e0-491f-825e-1f588844e318" />
-" />
-  <img src="<img width="382" height="852" alt="image" src="https://github.com/user-attachments/assets/9a601847-4353-41b8-91e1-f8286d3a355b" />
-%" />
+  <img src="docs/screenshots/dashboard-mobile.png" alt="Mobile Dashboard" width="300" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="docs/screenshots/timer-mobile.png" alt="Mobile Focus Timer" width="300" />
+  <br/><sub><b>Dashboard</b> &nbsp;•&nbsp; <b>3D Liquid Focus Timer</b></sub>
 </p>
 
-## url -https://smart-study-flow-7bbb.vercel.app/
 ---
 
 ## ✨ Phase 4 Highlights & Key Features
@@ -45,10 +71,10 @@
 - Multi-day class schedule with lecture/lab/seminar badges, room numbers, instructors, and custom color accents.
 
 ### 5. 🔔 Native Notifications & Permissions
-- **OriginOS 6 & Android 16 Support**: Android 13+ runtime notification permissions and Capacitor Local Notifications.
-- **Instant Test Alerts**: One-tap "Send Test Alert" button in Settings to verify device sound and banner banners.
+- **Android 13+ Notification Support**: Runtime notification permissions and Capacitor Local Notifications.
+- **Instant Test Alerts**: One-tap "Send Test Alert" button in Settings to verify device sound and notification banners.
 
-### 6. 📱 Android 16 & OriginOS 6 Ready
+### 6. 📱 Android 13+ Native Ready
 - **Adaptive Vector Icons**: Clean `ic_launcher_foreground.xml` and `ic_launcher_monochrome.xml` for Material You dynamic theming.
 - Edge-to-edge layout, dark theme optimization, and touch-first interactions.
 
@@ -65,7 +91,7 @@
 |---|---|
 | **Frontend Framework** | React 19, TypeScript, Vite |
 | **Styling & Effects** | Tailwind CSS, Custom 3D Glassmorphism CSS |
-| **Mobile Runtime** | Capacitor 8 (Android 14, 15, 16 / OriginOS 6) |
+| **Mobile Runtime** | Capacitor 8 (Android 13+, API 33+) |
 | **Cloud Backend** | Firebase Auth (Email/Password), Cloud Firestore |
 | **Notifications** | `@capacitor/local-notifications`, Web Notifications API |
 | **Icons & Visuals** | Lucide React, Canvas Confetti |

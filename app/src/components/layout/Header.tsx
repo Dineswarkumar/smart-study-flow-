@@ -73,7 +73,7 @@ export const Header: React.FC = () => {
         };
       default:
         return {
-          title: 'studzflow',
+          title: 'studyzflow',
           subtitle: 'Academic Workspace',
           icon: Sparkles,
         };

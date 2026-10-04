@@ -99,8 +99,27 @@ const formatNoteContentToHtml = (content: string): string => {
  */
 const getNotePlainTextPreview = (content: string): string => {
   if (!content) return 'No content yet...';
-  const textWithoutTags = content.replace(/<[^>]*>/g, ' ');
-  const cleaned = textWithoutTags.replace(/[#*`$]/g, '').replace(/\s+/g, ' ').trim();
+  let decoded = content;
+  if (typeof DOMParser !== 'undefined') {
+    try {
+      const doc = new DOMParser().parseFromString(content, 'text/html');
+      decoded = doc.body.textContent || '';
+    } catch {
+      // Fallback
+    }
+  }
+  const textWithoutTags = decoded.replace(/<[^>]*>/g, ' ');
+  const cleaned = textWithoutTags
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lambda;/g, 'λ')
+    .replace(/[#*`$]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   return cleaned || 'No content yet...';
 };
 
