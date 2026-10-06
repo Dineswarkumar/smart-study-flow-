@@ -79,6 +79,35 @@
   .app-shell::before { animation: none; }
 }
 
+/* App background logo watermark */
+.app-watermark-container {
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-watermark-logo {
+  width: min(65vw, 420px);
+  height: min(65vw, 420px);
+  opacity: 0.055;
+  filter: drop-shadow(0 0 60px rgba(99, 102, 241, 0.5));
+  animation: watermark-breathe 18s ease-in-out infinite alternate;
+  user-select: none;
+}
+
+.dark .app-watermark-logo {
+  opacity: 0.085;
+  filter: drop-shadow(0 0 80px rgba(139, 92, 246, 0.7));
+}
+
+@keyframes watermark-breathe {
+  0% { transform: scale(0.96) rotate(-2deg); }
+  100% { transform: scale(1.04) rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-watermark-logo { animation: none; }
+}
+
 /* Shared liquid-glass language for elevated surfaces and primary controls. */
 .liquid-glass-panel {
   position: relative;

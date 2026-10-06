@@ -15,7 +15,11 @@ export const MobileNav: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-slate-200 dark:border-slate-800 z-40 lg:hidden px-3 py-2 flex justify-around items-center shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl border-t border-indigo-100/70 dark:border-indigo-950/70 z-40 lg:hidden px-3 py-2 flex justify-around items-center shadow-2xl transition-colors relative overflow-hidden">
+      {/* Vibrant top subtle neon accent line */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-500 via-purple-500 to-indigo-500 opacity-80" />
+      <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/[0.04] to-transparent dark:from-purple-500/[0.06] pointer-events-none" />
+
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = activeTab === item.id || (item.id === 'notes' && activeTab === 'tasks');

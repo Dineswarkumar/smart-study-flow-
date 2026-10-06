@@ -97,8 +97,12 @@ export const Header: React.FC = () => {
   }).format(new Date());
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-2xs">
-      <div className="px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl border-b border-indigo-100/70 dark:border-indigo-950/70 shadow-xs transition-colors relative overflow-hidden">
+      {/* Vibrant top accent border that shines in both light and dark modes */}
+      <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-indigo-500 via-purple-500 via-pink-500 to-amber-500 opacity-85" />
+      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/[0.04] via-transparent to-purple-500/[0.04] dark:from-indigo-500/[0.07] dark:to-purple-500/[0.07] pointer-events-none" />
+      
+      <div className="px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 relative z-10">
         
         {/* Left: Mobile Drawer Trigger & Context Indicator */}
         <div className="flex items-center gap-3">
