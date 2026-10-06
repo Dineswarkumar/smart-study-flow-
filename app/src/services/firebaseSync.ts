@@ -81,6 +81,8 @@ export const uploadDeviceDataToCloud = async (): Promise<{ success: boolean; mes
   }
   try {
     const user = services.auth.currentUser;
+    // Clear pending sync flag early so immediate snapshot listener echoes don't re-trigger upload
+    storage.clearPendingCloudSync();
     const localData = storage.getAllData();
     await setDoc(doc(database, 'users', user.uid), {
       ...localData,
@@ -89,7 +91,6 @@ export const uploadDeviceDataToCloud = async (): Promise<{ success: boolean; mes
     });
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     storage.setLastCloudUpload(timestamp);
-    storage.clearPendingCloudSync();
     return { success: true, message: `Uploaded this device's data to cloud at ${timestamp}!` };
   } catch (err: any) {
     return { success: false, message: err?.message || 'Failed to upload data to cloud.' };
@@ -133,6 +134,7 @@ export const safeMergeCloudAndDevice = async (): Promise<{ success: boolean; mes
       storage.mergeAllData(snapshot.data());
     }
     const mergedData = storage.getAllData();
+    storage.clearPendingCloudSync();
     await setDoc(doc(database, 'users', user.uid), {
       ...mergedData,
       updatedAt: serverTimestamp(),
@@ -141,7 +143,6 @@ export const safeMergeCloudAndDevice = async (): Promise<{ success: boolean; mes
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     storage.setLastCloudUpload(timestamp);
     storage.setLastCloudDownload(timestamp);
-    storage.clearPendingCloudSync();
     return { success: true, message: `Merged device and cloud data without erasing anything at ${timestamp}!` };
   } catch (err: any) {
     return { success: false, message: err?.message || 'Failed to merge cloud and device data.' };
@@ -161,22 +162,43 @@ export function startFirebaseRealtimeSync(
   let stopDocument: Unsubscribe | null = null;
   let stopLocalChanges: (() => void) | null = null;
   let applyingRemote = false;
+  let isPublishing = false;
+  let publishQueued = false;
   let activeUid: string | null = null;
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   const publish = async (uid: string) => {
     if (!database || applyingRemote) return;
+    if (isPublishing) {
+      publishQueued = true;
+      return;
+    }
+    isPublishing = true;
     onStatus('syncing');
     try {
+      storage.clearPendingCloudSync();
       await setDoc(doc(database, 'users', uid), {
         ...storage.getAllData(),
         updatedAt: serverTimestamp(),
         updatedBy: storage.getSettings().deviceSyncId,
       });
-      storage.clearPendingCloudSync();
       onStatus('synced');
     } catch {
       onStatus('offline');
+    } finally {
+      isPublishing = false;
+      if (publishQueued) {
+        publishQueued = false;
+        void publish(uid);
+      }
     }
+  };
+
+  const schedulePublish = (uid: string) => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      void publish(uid);
+    }, 600);
   };
 
   const stopAuth = onAuthStateChanged(services.auth, user => {
@@ -193,9 +215,9 @@ export function startFirebaseRealtimeSync(
 
     onStatus('syncing');
     const userDocument = doc(database, 'users', user.uid);
-    stopDocument = onSnapshot(userDocument, snapshot => {
-      if (storage.hasPendingCloudSync()) {
-        void publish(user.uid);
+    stopDocument = onSnapshot(userDocument, { includeMetadataChanges: true }, snapshot => {
+      // Ignore local optimistic writes so we don't trigger circular sync echo on mobile
+      if (snapshot.metadata.hasPendingWrites) {
         return;
       }
       if (snapshot.exists()) {
@@ -204,23 +226,22 @@ export function startFirebaseRealtimeSync(
         onRemoteData(JSON.stringify(storage.getAllData()));
         storage.clearPendingCloudSync();
         queueMicrotask(() => { applyingRemote = false; });
-      } else {
-        void publish(user.uid);
       }
       onStatus('synced');
     }, () => onStatus('offline'));
 
     stopLocalChanges = subscribeToLocalChanges(() => {
-      if (!applyingRemote) void publish(user.uid);
+      if (!applyingRemote) schedulePublish(user.uid);
     });
   });
 
   const handleOnline = () => {
-    if (activeUid) void publish(activeUid);
+    if (activeUid) schedulePublish(activeUid);
   };
   window.addEventListener('online', handleOnline);
 
   return () => {
+    if (debounceTimer) clearTimeout(debounceTimer);
     stopAuth();
     stopDocument?.();
     stopLocalChanges?.();

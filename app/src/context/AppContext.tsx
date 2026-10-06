@@ -79,6 +79,7 @@ interface AppContextType {
   safeMergeSync: () => Promise<{ success: boolean; message: string }>;
   exportData: () => string;
   importData: (json: string) => boolean;
+  resetAllData: () => void;
   firebaseConfigured: boolean;
   firebaseUser: FirebaseSyncUser | null;
   signIn: (email: string, password: string) => Promise<void>;
@@ -500,6 +501,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return ok;
   };
 
+  const resetAllData = () => {
+    storage.resetAllData();
+    reloadAllFromStorage();
+  };
+
   useEffect(() => startFirebaseRealtimeSync((remoteData) => {
     if (storage.importAllData(remoteData)) reloadAllFromStorage();
   }, setSyncStatus), []);
@@ -556,6 +562,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       safeMergeSync,
       exportData,
       importData,
+      resetAllData,
       firebaseConfigured,
       firebaseUser,
       signIn: async (email, password) => { await signInToFirebase(email, password); },

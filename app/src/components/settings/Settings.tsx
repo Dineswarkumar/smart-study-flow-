@@ -22,7 +22,8 @@ import {
   BellRing,
   BellOff,
   Send,
-  Sparkles
+  Sparkles,
+  Trash2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
@@ -50,7 +51,8 @@ export const Settings: React.FC = () => {
     firebaseUser,
     signIn,
     createAccount,
-    signOut
+    signOut,
+    resetAllData
   } = useApp();
 
   const [importStatus, setImportStatus] = useState<string | null>(null);
@@ -545,6 +547,26 @@ export const Settings: React.FC = () => {
               className="hidden"
             />
           </label>
+        </div>
+
+        <div className="pt-2 border-t border-amber-200/50 dark:border-amber-900/40 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div>
+            <h4 className="text-xs font-black text-rose-600 dark:text-rose-400">Clear All App Data</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Permanently reset all tasks, notes, attendance and timetable to a fresh start.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm('Are you sure you want to completely reset all data? All fake records, schedules, notes, and attendance will be wiped clean.')) {
+                resetAllData();
+                setImportStatus('App reset successfully! All fake data wiped.');
+              }
+            }}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white dark:text-rose-400 dark:hover:text-white border border-rose-300/40 dark:border-rose-800/40 font-black text-xs transition-all cursor-pointer active:scale-95 shadow-xs"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Reset All App Data</span>
+          </button>
         </div>
       </div>
 
