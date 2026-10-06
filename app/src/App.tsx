@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileNav } from './components/layout/MobileNav';
-import { Dashboard } from './components/dashboard/Dashboard';
-import { NotesAndTasks } from './components/notes/NotesAndTasks';
-import { Schedule } from './components/schedule/Schedule';
-import { TimerAndAlarm } from './components/timer/TimerAndAlarm';
-import { Profile } from './components/profile/Profile';
-import { Settings } from './components/settings/Settings';
-import { Attendance } from './components/attendance/Attendance';
 import { AlarmRingingModal } from './components/timer/AlarmRingingModal';
+
+const named = <T extends string>(loader: () => Promise<Record<T, React.ComponentType>>, name: T) =>
+  lazy(() => loader().then(m => ({ default: m[name] })));
+
+const Dashboard = named(() => import('./components/dashboard/Dashboard'), 'Dashboard');
+const NotesAndTasks = named(() => import('./components/notes/NotesAndTasks'), 'NotesAndTasks');
+const Schedule = named(() => import('./components/schedule/Schedule'), 'Schedule');
+const TimerAndAlarm = named(() => import('./components/timer/TimerAndAlarm'), 'TimerAndAlarm');
+const Profile = named(() => import('./components/profile/Profile'), 'Profile');
+const Settings = named(() => import('./components/settings/Settings'), 'Settings');
+const Attendance = named(() => import('./components/attendance/Attendance'), 'Attendance');
 
 const MainContent: React.FC = () => {
   const { activeTab } = useApp();
@@ -47,7 +51,9 @@ const MainContent: React.FC = () => {
         <Header />
         
         <main className="flex-1 overflow-y-auto pb-24 lg:pb-8">
-          {renderActiveView()}
+          <Suspense fallback={<div className="p-8 text-text-muted">Loading…</div>}>
+            {renderActiveView()}
+          </Suspense>
         </main>
       </div>
 

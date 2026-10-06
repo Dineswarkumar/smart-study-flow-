@@ -570,12 +570,18 @@ const syncChannel = typeof window !== 'undefined' && 'BroadcastChannel' in windo
   ? new BroadcastChannel('studyflow_sync_channel')
   : null;
 
+let notifyTimer: ReturnType<typeof setTimeout> | null = null;
+
 function notifySync() {
   localStorage.setItem(PENDING_CLOUD_SYNC_KEY, '1');
-  localChangeListeners.forEach(listener => listener());
-  if (syncChannel) {
-    syncChannel.postMessage({ type: 'SYNC_UPDATE', timestamp: Date.now() });
-  }
+  if (notifyTimer) clearTimeout(notifyTimer);
+  notifyTimer = setTimeout(() => {
+    notifyTimer = null;
+    localChangeListeners.forEach(listener => listener());
+    if (syncChannel) {
+      syncChannel.postMessage({ type: 'SYNC_UPDATE', timestamp: Date.now() });
+    }
+  }, 400);
 }
 
 export function subscribeToSync(onSync: () => void) {
