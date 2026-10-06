@@ -50,11 +50,9 @@ export const Sidebar: React.FC = () => {
 
       {/* Sidebar Container */}
       <aside className={`
-        fixed left-0 top-0 h-full w-72 bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl border-r border-indigo-100/70 dark:border-indigo-950/70 py-6 px-4 z-50 flex flex-col justify-between transition-transform duration-300 shadow-md relative overflow-hidden
+        fixed left-0 top-0 h-full w-72 bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 py-6 px-4 z-50 flex flex-col justify-between transition-transform duration-300 shadow-xs
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        {/* Subtle vibrant right border accent line */}
-        <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-indigo-500/80 via-purple-500/60 to-amber-500/80 opacity-60 pointer-events-none" />
         <div>
           {/* Header Branding */}
           <div className="flex items-center justify-between px-3 mb-8">

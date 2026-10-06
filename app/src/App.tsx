@@ -43,20 +43,15 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <div className="app-shell flex h-screen overflow-hidden text-text-main transition-colors">
+    <div className="app-shell flex h-screen overflow-hidden bg-bg text-text-main transition-colors">
       {/* Sidebar Navigation */}
       <Sidebar />
 
       {/* Main Canvas Area */}
-      <div className="flex-1 flex flex-col h-full lg:ml-72 min-w-0 relative z-10">
+      <div className="flex-1 flex flex-col h-full lg:ml-72 min-w-0">
         <Header />
         
-        <main className="flex-1 overflow-y-auto pb-24 lg:pb-8 relative">
-          {/* Subtle Ambient App Logo Watermark in Main Content Canvas */}
-          <div className="app-watermark-container pointer-events-none fixed inset-0 lg:left-72 flex items-center justify-center overflow-hidden">
-            <img src="/logo.svg" alt="" className="app-watermark-logo" aria-hidden="true" />
-          </div>
-
+        <main className="flex-1 overflow-y-auto pb-24 lg:pb-8">
           <Suspense fallback={<div className="p-8 text-text-muted">Loading…</div>}>
             {renderActiveView()}
           </Suspense>
