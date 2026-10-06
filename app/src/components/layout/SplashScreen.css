@@ -1,0 +1,89 @@
+.sf-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #0b0f19;
+  color: #fff;
+  font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.sf-splash--leaving { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+/* Drifting aurora orbs */
+.sf-orb {
+  position: absolute;
+  width: 55vmax;
+  height: 55vmax;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.sf-orb--a { background: oklch(0.55 0.22 285); top: -20vmax; left: -15vmax; animation: sf-drift-a 9s ease-in-out infinite alternate; }
+.sf-orb--b { background: oklch(0.6 0.18 230);  bottom: -22vmax; right: -18vmax; animation: sf-drift-b 11s ease-in-out infinite alternate; }
+.sf-orb--c { background: oklch(0.55 0.2 330);  top: 30%; left: 40%; width: 30vmax; height: 30vmax; opacity: 0.3; animation: sf-drift-a 7s ease-in-out infinite alternate-reverse; }
+
+.sf-center { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
+
+.sf-logo-wrap { position: relative; display: grid; place-items: center; width: 96px; height: 96px; margin-bottom: 0.5rem; }
+.sf-logo {
+  position: relative;
+  border-radius: 24%;
+  box-shadow: 0 10px 40px oklch(0.55 0.22 285 / 0.55);
+  animation: sf-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both, sf-float 3s ease-in-out 0.8s infinite;
+}
+.sf-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 28%;
+  border: 2px solid oklch(0.75 0.15 285 / 0.7);
+  animation: sf-ring 2s ease-out infinite;
+}
+.sf-pulse--2 { animation-delay: 0.9s; }
+
+.sf-title {
+  display: flex;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.sf-title span { display: inline-block; opacity: 0; transform: translateY(14px); animation: sf-letter 0.5s ease forwards; }
+
+.sf-tag {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  opacity: 0;
+  animation: sf-fade 0.7s ease 1.1s forwards;
+}
+
+.sf-bar { width: 140px; height: 3px; margin-top: 1rem; border-radius: 99px; background: rgb(255 255 255 / 0.1); overflow: hidden; }
+.sf-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, oklch(0.65 0.2 285), oklch(0.75 0.15 220));
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: sf-load 1.7s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+@keyframes sf-pop { from { opacity: 0; transform: scale(0.4) rotate(-12deg); } to { opacity: 1; transform: none; } }
+@keyframes sf-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+@keyframes sf-ring { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.9); opacity: 0; } }
+@keyframes sf-letter { to { opacity: 1; transform: none; } }
+@keyframes sf-fade { to { opacity: 1; } }
+@keyframes sf-load { to { transform: scaleX(1); } }
+@keyframes sf-drift-a { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
+@keyframes sf-drift-b { to { transform: translate(-7vmax, -8vmax) scale(1.1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-splash *, .sf-orb { animation-duration: 0.01s !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; }
+}

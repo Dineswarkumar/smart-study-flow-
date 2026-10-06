@@ -1,8 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState, lazy, Suspense } from 'react';
+import type React from 'react';
 import { CalendarDays, ChevronLeft, Clock, MapPin, Plus, Trash2, User, Edit2, Sparkles, Edit3, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import type { ClassSchedule } from '../../types';
-import { AITimetableModal } from './AITimetableModal';
+
+const AITimetableModal = lazy(() =>
+  import('./AITimetableModal').then(m => ({ default: m.AITimetableModal }))
+);
 
 const days: ClassSchedule['dayOfWeek'][] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -278,11 +282,15 @@ export const Schedule: React.FC = () => {
       )}
 
       {/* Modal: AI Timetable Scanner */}
-      <AITimetableModal
-        open={showAIScanModal}
-        onClose={() => setShowAIScanModal(false)}
-        onImportClasses={handleBatchImport}
-      />
+      {showAIScanModal && (
+        <Suspense fallback={null}>
+          <AITimetableModal
+            open={showAIScanModal}
+            onClose={() => setShowAIScanModal(false)}
+            onImportClasses={handleBatchImport}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

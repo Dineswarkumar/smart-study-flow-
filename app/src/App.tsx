@@ -1,4 +1,5 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState, useCallback } from 'react';
+import { SplashScreen } from './components/layout/SplashScreen';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
@@ -67,9 +68,12 @@ const MainContent: React.FC = () => {
 };
 
 export function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const hideSplash = useCallback(() => setShowSplash(false), []);
   return (
     <AppProvider>
       <MainContent />
+      {showSplash && <SplashScreen onDone={hideSplash} />}
     </AppProvider>
   );
 }

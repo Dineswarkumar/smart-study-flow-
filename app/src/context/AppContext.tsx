@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { 
   ActiveTab, 
   StudentProfile, 
@@ -440,8 +440,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // In-app alarm watcher: check every 5 seconds for scheduled alarm triggers
+  const alarmWatchRef = useRef({ alarms, settings, updateAlarm });
+  useEffect(() => {
+    alarmWatchRef.current = { alarms, settings, updateAlarm };
+  });
+
   useEffect(() => {
     const interval = setInterval(() => {
+      const { alarms, settings, updateAlarm } = alarmWatchRef.current;
       const now = new Date();
       const currentHM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       if (lastTriggeredAlarmMinuteRef.current === currentHM) return;
@@ -461,7 +467,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [alarms, settings.soundEnabled, settings.alarmVolume]);
+  }, []);
 
   const updateSettings = (updated: Partial<AppSettings>) => {
     const newSettings = { ...settings, ...updated };
