@@ -305,7 +305,7 @@ export const Dashboard: React.FC = () => {
           <div className="relative z-10 min-w-0">
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block truncate">Target GPA</span>
             <span className="text-lg sm:text-xl font-black text-slate-900 dark:text-white font-headline mt-0.5 block">
-              {profile.targetGpa || '3.9'}
+              {profile.targetGpa || '—'}
             </span>
           </div>
         </div>
@@ -348,7 +348,25 @@ export const Dashboard: React.FC = () => {
 
           {/* Schedule List */}
           <div className="space-y-3.5">
-            {displayClasses.map((item, idx) => {
+            {displayClasses.length === 0 ? (
+              <div className="py-10 px-4 text-center rounded-3xl border-2 border-dashed border-indigo-200/80 dark:border-indigo-900/50 bg-indigo-50/30 dark:bg-indigo-950/20">
+                <Calendar className="w-10 h-10 text-indigo-400 dark:text-indigo-600 mx-auto mb-2" />
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                  No classes scheduled for today
+                </p>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-3">
+                  Enjoy your free time, or configure your weekly timetable.
+                </p>
+                <button
+                  onClick={() => setActiveTab('schedule')}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#4338ca] text-white font-bold text-xs hover:bg-[#3730a3] transition-all shadow-xs cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Open Weekly Timetable</span>
+                </button>
+              </div>
+            ) : (
+              displayClasses.map((item, idx) => {
               const badge = getTypeBadge(idx, item.subjectName);
               const record = attendance.find(
                 r => r.date === todayIso && r.subjectName === item.subjectName && (r.scheduleId === item.id || r.time?.includes(item.startTime))
@@ -467,7 +485,7 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
               );
-            })}
+            }))}
           </div>
 
         </div>

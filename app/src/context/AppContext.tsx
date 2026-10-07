@@ -13,7 +13,7 @@ import type {
   AttendanceRecord,
   SubjectAttendanceGoal
 } from '../types';
-import { storage, subscribeToSync } from '../services/storage';
+import { storage, subscribeToSync, defaultProfile } from '../services/storage';
 import { cancelAlarmNotification, scheduleAlarmNotification, playRichAlarmChime } from '../services/notifications';
 import {
   firebaseConfigured,
@@ -25,6 +25,7 @@ import {
   uploadDeviceDataToCloud,
   downloadCloudDataToDevice,
   safeMergeCloudAndDevice,
+  wipeCloudData,
   type FirebaseSyncUser,
 } from '../services/firebaseSync';
 
@@ -48,6 +49,7 @@ interface AppContextType {
   schedule: ClassSchedule[];
   addClass: (item: Omit<ClassSchedule, 'id'>) => void;
   batchAddClasses: (items: Omit<ClassSchedule, 'id'>[]) => void;
+  replaceSchedule: (items: Omit<ClassSchedule, 'id'>[]) => void;
   updateClass: (id: string, updated: Partial<ClassSchedule>) => void;
   deleteClass: (id: string) => void;
   sessions: FocusSession[];
@@ -79,7 +81,7 @@ interface AppContextType {
   safeMergeSync: () => Promise<{ success: boolean; message: string }>;
   exportData: () => string;
   importData: (json: string) => boolean;
-  resetAllData: () => void;
+  resetAllData: () => Promise<boolean>;
   firebaseConfigured: boolean;
   firebaseUser: FirebaseSyncUser | null;
   signIn: (email: string, password: string) => Promise<void>;
@@ -328,6 +330,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     storage.saveSchedule(updated);
   };
 
+  const replaceSchedule = (items: Omit<ClassSchedule, 'id'>[]) => {
+    const newClasses: ClassSchedule[] = (items || []).map((item, idx) => ({
+      ...item,
+      id: 'class_' + Date.now() + '_' + idx + '_' + Math.random().toString(36).slice(2, 7),
+    }));
+    setSchedule(newClasses);
+    storage.saveSchedule(newClasses);
+  };
+
   const updateClass = (id: string, updated: Partial<ClassSchedule>) => {
     const updatedSchedule = schedule.map(c => c.id === id ? { ...c, ...updated } : c);
     setSchedule(updatedSchedule);
@@ -501,9 +512,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return ok;
   };
 
-  const resetAllData = () => {
+  const resetAllData = async (): Promise<boolean> => {
     storage.resetAllData();
-    reloadAllFromStorage();
+    setProfile({ ...defaultProfile });
+    setTasks([]);
+    setNotes([]);
+    setSchedule([]);
+    setAttendance([]);
+    setAttendanceGoals([]);
+    setSessions([]);
+    setAlarms([]);
+    setLastCloudUpload(null);
+    setLastCloudDownload(null);
+    setSyncStatus('synced');
+
+    if (firebaseUser) {
+      await wipeCloudData();
+    }
+    return true;
   };
 
   useEffect(() => startFirebaseRealtimeSync((remoteData) => {
@@ -531,6 +557,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       schedule,
       addClass,
       batchAddClasses,
+      replaceSchedule,
       updateClass,
       deleteClass,
       sessions,

@@ -91,7 +91,10 @@ export const uploadDeviceDataToCloud = async (): Promise<{ success: boolean; mes
     });
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     storage.setLastCloudUpload(timestamp);
-    return { success: true, message: `Uploaded this device's data to cloud at ${timestamp}!` };
+    return { 
+      success: true, 
+      message: `Uploaded ${localData.tasks.length} tasks, ${localData.notes.length} notes, and ${localData.schedule.length} classes to cloud at ${timestamp}!` 
+    };
   } catch (err: any) {
     return { success: false, message: err?.message || 'Failed to upload data to cloud.' };
   }
@@ -116,9 +119,34 @@ export const downloadCloudDataToDevice = async (): Promise<{ success: boolean; m
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     storage.setLastCloudDownload(timestamp);
     storage.clearPendingCloudSync();
-    return { success: true, message: `Loaded latest cloud data onto this device at ${timestamp}!` };
+    const taskCount = Array.isArray(cloudData.tasks) ? cloudData.tasks.length : 0;
+    const noteCount = Array.isArray(cloudData.notes) ? cloudData.notes.length : 0;
+    const classCount = Array.isArray(cloudData.schedule) ? cloudData.schedule.length : 0;
+    return { 
+      success: true, 
+      message: `Loaded ${taskCount} tasks, ${noteCount} notes, and ${classCount} classes from cloud at ${timestamp}!` 
+    };
   } catch (err: any) {
     return { success: false, message: err?.message || 'Failed to download data from cloud.' };
+  }
+};
+
+export const wipeCloudData = async (): Promise<{ success: boolean; message: string }> => {
+  const services = getFirebaseServices();
+  if (!services || !services.auth.currentUser || !database) {
+    return { success: true, message: 'Local data reset (not connected to cloud).' };
+  }
+  try {
+    const user = services.auth.currentUser;
+    storage.clearPendingCloudSync();
+    await setDoc(doc(database, 'users', user.uid), {
+      ...storage.getAllData(),
+      updatedAt: serverTimestamp(),
+      updatedBy: storage.getSettings().deviceSyncId,
+    });
+    return { success: true, message: 'Cloud backup reset to clean state.' };
+  } catch (err: any) {
+    return { success: false, message: err?.message || 'Failed to reset cloud backup.' };
   }
 };
 

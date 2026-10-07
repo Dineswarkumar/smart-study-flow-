@@ -384,15 +384,18 @@ export const storage = {
     }
   },
   resetAllData: () => {
-    localStorage.removeItem(STORAGE_KEYS.PROFILE);
-    localStorage.removeItem(STORAGE_KEYS.TASKS);
-    localStorage.removeItem(STORAGE_KEYS.NOTES);
-    localStorage.removeItem(STORAGE_KEYS.SCHEDULE);
-    localStorage.removeItem(STORAGE_KEYS.SESSIONS);
-    localStorage.removeItem(STORAGE_KEYS.ALARMS);
-    localStorage.removeItem(STORAGE_KEYS.ATTENDANCE);
-    localStorage.removeItem(STORAGE_KEYS.ATTENDANCE_GOALS);
-    localStorage.setItem(PENDING_CLOUD_SYNC_KEY, '1');
+    storage.saveProfile({ ...defaultProfile });
+    storage.saveTasks([]);
+    storage.saveNotes([]);
+    storage.saveSchedule([]);
+    storage.saveSessions([]);
+    storage.saveAlarms([]);
+    storage.saveAttendance([]);
+    storage.saveAttendanceGoals([]);
+    storage.saveCustomTimers(defaultCustomTimers);
+    localStorage.removeItem(PENDING_CLOUD_SYNC_KEY);
+    localStorage.removeItem('study_flow_last_cloud_upload');
+    localStorage.removeItem('study_flow_last_cloud_download');
     notifySync();
   },
 };
