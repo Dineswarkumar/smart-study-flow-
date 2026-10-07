@@ -28,3 +28,16 @@
    - Cleaned up obsolete mockup folders and dummy seed profiles.
    - Safe in-app confirmation modals replacing unsupported mobile `window.confirm`.
    - Hardware back button handling navigating to Dashboard before app exit.
+   - Root [app/src/components/common/ErrorBoundary.tsx](app/src/components/common/ErrorBoundary.tsx) protecting against render crashes with reload and safe-reset recovery actions.
+
+6. **Security & Sanitization**:
+   - Integrated `dompurify` in [app/src/components/notes/NotesAndTasks.tsx](app/src/components/notes/NotesAndTasks.tsx) for rich HTML note rendering.
+   - Strict XSS and structure sanitization in [app/src/services/storage.ts](app/src/services/storage.ts) during JSON backup restoration.
+
+7. **Automated Testing & Continuous Integration**:
+   - [app/src/services/__tests__/attendance.test.ts](app/src/services/__tests__/attendance.test.ts) covering 20 edge-case test suites for attendance analytics.
+   - [.github/workflows/ci.yml](.github/workflows/ci.yml) validating linting, type checks (`tsc -b`), unit tests (`vitest run`), and production build on every push and PR.
+
+8. **Bundle Optimization & State Refactoring**:
+   - Dynamic lazy-importing for Firebase Auth and Firestore in [app/src/services/firebaseSync.ts](app/src/services/firebaseSync.ts), slashing initial bundle size by 66% (from 806 kB to 269 kB).
+   - Migrated 30+ fragmented `useState` hooks in [app/src/context/AppContext.tsx](app/src/context/AppContext.tsx) into a single typed `useReducer` with atomic reload and reset dispatches.
