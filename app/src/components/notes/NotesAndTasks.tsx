@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { useApp } from '../../context/AppContext';
 import type { TaskPriority, TaskItem, NoteItem } from '../../types';
 import { 
@@ -60,38 +61,48 @@ const isOverdue = (dueDate: string) => {
 const formatNoteContentToHtml = (content: string): string => {
   if (!content) return '<p><br></p>';
   
-  // If already contains HTML block tags, return as-is
+  let rawHtml: string;
+  // If already contains HTML block tags, process as HTML
   if (/<(p|h[1-6]|ul|ol|table|div|blockquote)[^>]*>/i.test(content)) {
-    return content;
+    rawHtml = content;
+  } else {
+    // Convert markdown / plain text to clean HTML
+    let html = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h2>$1</h2>');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    html = html.replace(/^- \[ \]\s+(.*)$/gim, '<ul class="note-checklist"><li><span class="checklist-box">☐</span> $1</li></ul>');
+    html = html.replace(/^- \[x\]\s+(.*)$/gim, '<ul class="note-checklist"><li><span class="checklist-box">☑</span> <span class="line-through text-slate-400">$1</span></li></ul>');
+    html = html.replace(/^[*-]\s+(.*)$/gim, '<ul><li>$1</li></ul>');
+    html = html.replace(/<\/ul>\s*<ul>/gim, '');
+    html = html.replace(/^\d+\.\s+(.*)$/gim, '<ol><li>$1</li></ol>');
+    html = html.replace(/<\/ol>\s*<ol>/gim, '');
+
+    const lines = html.split('\n');
+    const processed = lines.map(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return '<p><br></p>';
+      if (/^<(h[1-6]|ul|ol|table|div|blockquote|li)/i.test(trimmed)) return trimmed;
+      return `<p>${trimmed}</p>`;
+    });
+    rawHtml = processed.join('');
   }
 
-  // Convert markdown / plain text to clean HTML
-  let html = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h2>$1</h2>');
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  html = html.replace(/^- \[ \]\s+(.*)$/gim, '<ul class="note-checklist"><li><span class="checklist-box">☐</span> $1</li></ul>');
-  html = html.replace(/^- \[x\]\s+(.*)$/gim, '<ul class="note-checklist"><li><span class="checklist-box">☑</span> <span class="line-through text-slate-400">$1</span></li></ul>');
-  html = html.replace(/^[*-]\s+(.*)$/gim, '<ul><li>$1</li></ul>');
-  html = html.replace(/<\/ul>\s*<ul>/gim, '');
-  html = html.replace(/^\d+\.\s+(.*)$/gim, '<ol><li>$1</li></ol>');
-  html = html.replace(/<\/ol>\s*<ol>/gim, '');
-
-  const lines = html.split('\n');
-  const processed = lines.map(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return '<p><br></p>';
-    if (/^<(h[1-6]|ul|ol|table|div|blockquote|li)/i.test(trimmed)) return trimmed;
-    return `<p>${trimmed}</p>`;
+  return DOMPurify.sanitize(rawHtml, {
+    ALLOWED_TAGS: [
+      'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'span',
+      'strong', 'b', 'em', 'i', 'code', 'pre', 'blockquote', 'table',
+      'thead', 'tbody', 'tr', 'th', 'td', 'br', 'hr', 'a'
+    ],
+    ALLOWED_ATTR: ['class', 'href', 'target', 'rel']
   });
-  return processed.join('');
 };
 
 /**

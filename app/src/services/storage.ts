@@ -1,4 +1,22 @@
+import DOMPurify from 'dompurify';
 import type { StudentProfile, TaskItem, NoteItem, ClassSchedule, FocusSession, AppSettings, AlarmItem, CustomTimerItem, AttendanceRecord, SubjectAttendanceGoal } from '../types';
+
+const sanitizeHtml = (dirty: unknown): string => {
+  if (typeof dirty !== 'string') return '';
+  return DOMPurify.sanitize(dirty, {
+    ALLOWED_TAGS: [
+      'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'span',
+      'strong', 'b', 'em', 'i', 'code', 'pre', 'blockquote', 'table',
+      'thead', 'tbody', 'tr', 'th', 'td', 'br', 'hr', 'a'
+    ],
+    ALLOWED_ATTR: ['class', 'href', 'target', 'rel']
+  });
+};
+
+const sanitizeText = (dirty: unknown): string => {
+  if (typeof dirty !== 'string') return '';
+  return DOMPurify.sanitize(dirty, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
+};
 
 const STORAGE_KEYS = {
   PROFILE: 'studyflow_profile',
@@ -367,16 +385,82 @@ export const storage = {
 
       if (hasInvalidSection) return false;
 
-      if (parsed.profile) storage.saveProfile({ ...defaultProfile, ...parsed.profile });
-      if (parsed.tasks) storage.saveTasks(parsed.tasks as TaskItem[]);
-      if (parsed.notes) storage.saveNotes(parsed.notes as NoteItem[]);
-      if (parsed.schedule) storage.saveSchedule(parsed.schedule as ClassSchedule[]);
+      if (parsed.profile && isRecord(parsed.profile)) {
+        const p = parsed.profile as Record<string, unknown>;
+        const sanitizedProfile: StudentProfile = {
+          ...defaultProfile,
+          name: sanitizeText(p.name),
+          major: sanitizeText(p.major),
+          academicYear: sanitizeText(p.academicYear),
+          targetGpa: sanitizeText(p.targetGpa),
+          weeklyGoalHours: typeof p.weeklyGoalHours === 'number' ? p.weeklyGoalHours : defaultProfile.weeklyGoalHours,
+          email: sanitizeText(p.email),
+          bio: sanitizeText(p.bio),
+        };
+        storage.saveProfile(sanitizedProfile);
+      }
+
+      if (parsed.tasks && Array.isArray(parsed.tasks)) {
+        const sanitizedTasks: TaskItem[] = (parsed.tasks as TaskItem[]).map((t) => ({
+          ...t,
+          title: sanitizeText(t.title),
+          description: t.description ? sanitizeText(t.description) : undefined,
+          subject: t.subject ? sanitizeText(t.subject) : undefined,
+          subtasks: Array.isArray(t.subtasks)
+            ? t.subtasks.map((st) => ({ ...st, title: sanitizeText(st.title) }))
+            : undefined,
+        }));
+        storage.saveTasks(sanitizedTasks);
+      }
+
+      if (parsed.notes && Array.isArray(parsed.notes)) {
+        const sanitizedNotes: NoteItem[] = (parsed.notes as NoteItem[]).map((n) => ({
+          ...n,
+          title: sanitizeText(n.title),
+          subject: sanitizeText(n.subject),
+          content: sanitizeHtml(n.content),
+          tags: Array.isArray(n.tags) ? n.tags.map(sanitizeText).filter(Boolean) : [],
+        }));
+        storage.saveNotes(sanitizedNotes);
+      }
+
+      if (parsed.schedule && Array.isArray(parsed.schedule)) {
+        const sanitizedSchedule: ClassSchedule[] = (parsed.schedule as ClassSchedule[]).map((s) => ({
+          ...s,
+          subjectName: sanitizeText(s.subjectName),
+          code: s.code ? sanitizeText(s.code) : undefined,
+          instructor: sanitizeText(s.instructor),
+          location: sanitizeText(s.location),
+        }));
+        storage.saveSchedule(sanitizedSchedule);
+      }
+
       if (parsed.sessions) storage.saveSessions(parsed.sessions as FocusSession[]);
       if (parsed.settings) storage.saveSettings({ ...defaultSettings, ...parsed.settings });
-      if (parsed.alarms) storage.saveAlarms(parsed.alarms as AlarmItem[]);
+      if (parsed.alarms && Array.isArray(parsed.alarms)) {
+        const sanitizedAlarms: AlarmItem[] = (parsed.alarms as AlarmItem[]).map((a) => ({
+          ...a,
+          label: sanitizeText(a.label),
+        }));
+        storage.saveAlarms(sanitizedAlarms);
+      }
       if (parsed.customTimers) storage.saveCustomTimers(parsed.customTimers as CustomTimerItem[]);
-      if (parsed.attendance) storage.saveAttendance(parsed.attendance as AttendanceRecord[]);
-      if (parsed.attendanceGoals) storage.saveAttendanceGoals(parsed.attendanceGoals as SubjectAttendanceGoal[]);
+      if (parsed.attendance && Array.isArray(parsed.attendance)) {
+        const sanitizedAttendance: AttendanceRecord[] = (parsed.attendance as AttendanceRecord[]).map((a) => ({
+          ...a,
+          subjectName: sanitizeText(a.subjectName),
+          location: a.location ? sanitizeText(a.location) : undefined,
+          notes: a.notes ? sanitizeText(a.notes) : undefined,
+        }));
+        storage.saveAttendance(sanitizedAttendance);
+      }
+      if (parsed.attendanceGoals && Array.isArray(parsed.attendanceGoals)) {
+        const sanitizedGoals: SubjectAttendanceGoal[] = (parsed.attendanceGoals as SubjectAttendanceGoal[]).map((g) => ({
+          ...g,
+          subjectName: sanitizeText(g.subjectName),
+        }));
+        storage.saveAttendanceGoals(sanitizedGoals);
+      }
       notifySync();
       return true;
     } catch {
