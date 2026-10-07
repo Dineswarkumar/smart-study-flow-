@@ -6,7 +6,7 @@
 
 **studyzflow** is an intelligent, modern academic productivity suite built with React 19, TypeScript, Tailwind CSS, and Capacitor for Android (Android 13+) and Web.
 
-🌐 **Live Web App:** studyzflow - Academic Productivity https://share.google/GPRkulAwCveUZLy4p
+🌐 **Live Web App:** studyzflow - Academic Productivity https://smart-study-flow-nu.vercel.app/
 
 ---
 
