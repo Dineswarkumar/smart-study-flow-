@@ -6,7 +6,7 @@
 
 **studyzflow** is an intelligent, modern academic productivity suite built with React 19, TypeScript, Tailwind CSS, and Capacitor for Android (Android 13+) and Web.
 
-🌐 **Live Web App:** [smart-study-flow-7bbb.vercel.app](https://smart-study-flow-nu.vercel.app/)
+🌐 **Live Web App:** [smart-study-flow-nu.vercel.app](https://smart-study-flow-nu.vercel.app/)
 
 ---
 
@@ -86,7 +86,7 @@
 ### 7. ☁️ Real-time Cloud Sync & Offline-First
 - **Firebase Auth & Firestore**: Multi-device live synchronization between PC and Android.
 - **Offline Storage**: Full localStorage fallback with automatic sync replay on reconnection.
-- **JSON Backup**: One-click encrypted JSON workspace export and import.
+- **JSON Backup**: One-click JSON workspace export and import.
 
 ---
 
