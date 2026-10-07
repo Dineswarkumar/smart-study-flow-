@@ -6,7 +6,8 @@
 
 **studyzflow** is an intelligent, modern academic productivity suite built with React 19, TypeScript, Tailwind CSS, and Capacitor for Android (Android 13+) and Web.
 
-🌐 **Live Web App:** [smart-study-flow-nu.vercel.app](https://smart-study-flow-nu.vercel.app/)
+🌐 **Live Web App:** [studyzflow.vercel.app](https://studyzflow.vercel.app/)
+
 
 ---
 
@@ -44,7 +45,9 @@
   <img src="docs/screenshots/dashboard-mobile.png" alt="Mobile Dashboard" width="300" />
   &nbsp;&nbsp;&nbsp;
   <img src="docs/screenshots/timer-mobile.png" alt="Mobile Focus Timer" width="300" />
-  <br/><sub><b>Dashboard</b> &nbsp;•&nbsp; <b>3D Liquid Focus Timer</b></sub>
+  &nbsp;&nbsp;&nbsp;
+  <img src="https://github.com/user-attachments/assets/8f8d444a-5cec-4752-81b6-7fca6cfb2ec8" alt="Mobile Attendance Tracker" width="300" />
+  <br/><sub><b>Dashboard</b> &nbsp;•&nbsp; <b>3D Liquid Focus Timer</b> &nbsp;•&nbsp; <b>Attendance Tracker</b></sub>
 </p>
 
 ---
@@ -164,6 +167,3 @@ npx cap sync android  # Sync web build and plugins to Android
 ```
 
 ---
-
-## 📄 License
-MIT License. Created for students and lifelong learners.
