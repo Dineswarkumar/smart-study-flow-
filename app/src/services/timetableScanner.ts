@@ -23,11 +23,7 @@ const PALETTE = [
 ];
 
 export const getGeminiApiKey = (): string => {
-  return (
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    localStorage.getItem('study_flow_gemini_key') ||
-    ''
-  ).trim();
+  return (localStorage.getItem('study_flow_gemini_key') || '').trim();
 };
 
 export const setGeminiApiKey = (key: string): void => {

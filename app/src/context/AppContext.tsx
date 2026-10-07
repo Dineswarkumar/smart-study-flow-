@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { 
   ActiveTab, 
   StudentProfile, 
@@ -13,7 +13,7 @@ import type {
   AttendanceRecord,
   SubjectAttendanceGoal
 } from '../types';
-import { storage, subscribeToSync } from '../services/storage';
+import { storage, subscribeToSync, defaultProfile } from '../services/storage';
 import { cancelAlarmNotification, scheduleAlarmNotification, playRichAlarmChime } from '../services/notifications';
 import {
   firebaseConfigured,
@@ -25,6 +25,7 @@ import {
   uploadDeviceDataToCloud,
   downloadCloudDataToDevice,
   safeMergeCloudAndDevice,
+  wipeCloudData,
   type FirebaseSyncUser,
 } from '../services/firebaseSync';
 
@@ -48,6 +49,7 @@ interface AppContextType {
   schedule: ClassSchedule[];
   addClass: (item: Omit<ClassSchedule, 'id'>) => void;
   batchAddClasses: (items: Omit<ClassSchedule, 'id'>[]) => void;
+  replaceSchedule: (items: Omit<ClassSchedule, 'id'>[]) => void;
   updateClass: (id: string, updated: Partial<ClassSchedule>) => void;
   deleteClass: (id: string) => void;
   sessions: FocusSession[];
@@ -79,6 +81,7 @@ interface AppContextType {
   safeMergeSync: () => Promise<{ success: boolean; message: string }>;
   exportData: () => string;
   importData: (json: string) => boolean;
+  resetAllData: () => Promise<boolean>;
   firebaseConfigured: boolean;
   firebaseUser: FirebaseSyncUser | null;
   signIn: (email: string, password: string) => Promise<void>;
@@ -327,6 +330,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     storage.saveSchedule(updated);
   };
 
+  const replaceSchedule = (items: Omit<ClassSchedule, 'id'>[]) => {
+    const newClasses: ClassSchedule[] = (items || []).map((item, idx) => ({
+      ...item,
+      id: 'class_' + Date.now() + '_' + idx + '_' + Math.random().toString(36).slice(2, 7),
+    }));
+    setSchedule(newClasses);
+    storage.saveSchedule(newClasses);
+  };
+
   const updateClass = (id: string, updated: Partial<ClassSchedule>) => {
     const updatedSchedule = schedule.map(c => c.id === id ? { ...c, ...updated } : c);
     setSchedule(updatedSchedule);
@@ -440,8 +452,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // In-app alarm watcher: check every 5 seconds for scheduled alarm triggers
+  const alarmWatchRef = useRef({ alarms, settings, updateAlarm });
+  useEffect(() => {
+    alarmWatchRef.current = { alarms, settings, updateAlarm };
+  });
+
   useEffect(() => {
     const interval = setInterval(() => {
+      const { alarms, settings, updateAlarm } = alarmWatchRef.current;
       const now = new Date();
       const currentHM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       if (lastTriggeredAlarmMinuteRef.current === currentHM) return;
@@ -461,7 +479,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [alarms, settings.soundEnabled, settings.alarmVolume]);
+  }, []);
 
   const updateSettings = (updated: Partial<AppSettings>) => {
     const newSettings = { ...settings, ...updated };
@@ -494,6 +512,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return ok;
   };
 
+  const resetAllData = async (): Promise<boolean> => {
+    storage.resetAllData();
+    setProfile({ ...defaultProfile });
+    setTasks([]);
+    setNotes([]);
+    setSchedule([]);
+    setAttendance([]);
+    setAttendanceGoals([]);
+    setSessions([]);
+    setAlarms([]);
+    setLastCloudUpload(null);
+    setLastCloudDownload(null);
+    setSyncStatus('synced');
+
+    if (firebaseUser) {
+      await wipeCloudData();
+    }
+    return true;
+  };
+
   useEffect(() => startFirebaseRealtimeSync((remoteData) => {
     if (storage.importAllData(remoteData)) reloadAllFromStorage();
   }, setSyncStatus), []);
@@ -519,6 +557,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       schedule,
       addClass,
       batchAddClasses,
+      replaceSchedule,
       updateClass,
       deleteClass,
       sessions,
@@ -550,6 +589,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       safeMergeSync,
       exportData,
       importData,
+      resetAllData,
       firebaseConfigured,
       firebaseUser,
       signIn: async (email, password) => { await signInToFirebase(email, password); },

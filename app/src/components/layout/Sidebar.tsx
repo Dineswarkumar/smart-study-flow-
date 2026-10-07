@@ -50,7 +50,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Sidebar Container */}
       <aside className={`
-        fixed left-0 top-0 h-full w-72 bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 py-6 px-4 z-50 flex flex-col justify-between transition-transform duration-300 shadow-xs
+        fixed left-0 top-0 h-full w-72 bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 pt-6 pb-24 lg:py-6 px-4 z-50 flex flex-col justify-between transition-transform duration-300 shadow-xs
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div>
@@ -154,14 +154,14 @@ export const Sidebar: React.FC = () => {
           >
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full bg-[#4338ca] text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
-                {profile.name ? profile.name.slice(0, 2).toUpperCase() : 'AL'}
+                {profile.name ? profile.name.slice(0, 2).toUpperCase() : <User className="w-4 h-4 text-white" />}
               </div>
               <div className="text-left min-w-0">
                 <span className="font-bold text-xs text-slate-900 dark:text-white block truncate leading-tight">
-                  {profile.name || 'Alex Vance'}
+                  {profile.name || 'Set Up Profile'}
                 </span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block truncate">
-                  {profile.major || 'Computer Science'} • {profile.academicYear || 'Junior (Year 3)'}
+                  {profile.major ? `${profile.major}${profile.academicYear ? ` • ${profile.academicYear}` : ''}` : 'Tap to add course details'}
                 </span>
               </div>
             </div>

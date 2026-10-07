@@ -256,17 +256,12 @@ export const TimerAndAlarm: React.FC = () => {
 
   const handleDeleteTimer = (timerId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (customTimers.length <= 1) {
-      alert('You must have at least one timer.');
-      return;
-    }
-    if (window.confirm('Delete this timer preset?')) {
-      const updated = customTimers.filter(t => t.id !== timerId);
-      setCustomTimers(updated);
-      storage.saveCustomTimers(updated);
-      if (activeTimerId === timerId) {
-        setActiveTimerId(updated[0]?.id || '');
-      }
+    if (customTimers.length <= 1) return;
+    const updated = customTimers.filter(t => t.id !== timerId);
+    setCustomTimers(updated);
+    storage.saveCustomTimers(updated);
+    if (activeTimerId === timerId) {
+      setActiveTimerId(updated[0]?.id || '');
     }
   };
 

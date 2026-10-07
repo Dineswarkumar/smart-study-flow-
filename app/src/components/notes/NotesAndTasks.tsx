@@ -303,10 +303,8 @@ export const NotesAndTasks: React.FC = () => {
 
   const handleDeleteNoteFromModal = () => {
     if (!fullPageNote) return;
-    if (window.confirm(`Delete note "${fullPageNote.title}"?`)) {
-      deleteNote(fullPageNote.id);
-      setFullPageNote(null);
-    }
+    deleteNote(fullPageNote.id);
+    setFullPageNote(null);
   };
 
   const handleAddTagToFullNote = () => {
@@ -642,7 +640,7 @@ export const NotesAndTasks: React.FC = () => {
                         <button
                           onClick={(e) => { 
                             e.stopPropagation(); 
-                            if (window.confirm(`Delete "${n.title}"?`)) deleteNote(n.id); 
+                            deleteNote(n.id); 
                           }}
                           className="p-1.5 text-slate-400 hover:text-rose-500 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                           title="Delete Note"

@@ -24,7 +24,7 @@ import {
 interface AITimetableModalProps {
   open: boolean;
   onClose: () => void;
-  onImportClasses: (classes: Omit<ClassSchedule, 'id'>[]) => void;
+  onImportClasses: (classes: Omit<ClassSchedule, 'id'>[], replaceExisting?: boolean) => void;
 }
 
 export const AITimetableModal: React.FC<AITimetableModalProps> = ({
@@ -40,6 +40,7 @@ export const AITimetableModal: React.FC<AITimetableModalProps> = ({
   const [extractedClasses, setExtractedClasses] = useState<
     (Omit<ClassSchedule, 'id'> & { selected: boolean })[]
   >([]);
+  const [replaceExisting, setReplaceExisting] = useState<boolean>(true);
 
   if (!open) return null;
 
@@ -118,7 +119,7 @@ export const AITimetableModal: React.FC<AITimetableModalProps> = ({
       endTime: item.endTime,
       color: item.color,
     }));
-    onImportClasses(classesToImport);
+    onImportClasses(classesToImport, replaceExisting);
 
     confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
     onClose();
@@ -388,6 +389,20 @@ export const AITimetableModal: React.FC<AITimetableModalProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {extractedClasses.length > 0 && (
+            <div className="px-6 py-2">
+              <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-200 p-3 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-900/40">
+                <input
+                  type="checkbox"
+                  checked={replaceExisting}
+                  onChange={(e) => setReplaceExisting(e.target.checked)}
+                  className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 accent-indigo-600 cursor-pointer"
+                />
+                <span>Replace existing timetable classes with scanned schedule</span>
+              </label>
             </div>
           )}
 

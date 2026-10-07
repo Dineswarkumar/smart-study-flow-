@@ -20,13 +20,13 @@ export const defaultAttendanceGoals: SubjectAttendanceGoal[] = [];
 const localChangeListeners = new Set<() => void>();
 
 export const defaultProfile: StudentProfile = {
-  name: 'Alex Vance',
-  major: 'Computer Science',
-  academicYear: 'Junior (Year 3)',
-  targetGpa: '3.9',
-  weeklyGoalHours: 25,
-  email: 'alex.vance@university.edu',
-  bio: 'Passionate CS student focusing on Algorithms, Data Structures & Machine Learning.',
+  name: '',
+  major: '',
+  academicYear: '',
+  targetGpa: '',
+  weeklyGoalHours: 15,
+  email: '',
+  bio: '',
 };
 
 export const defaultSettings: AppSettings = {
@@ -43,102 +43,9 @@ export const defaultSettings: AppSettings = {
   deviceSyncId: 'device_' + Math.random().toString(36).substring(2, 9),
 };
 
-export const defaultTasks: TaskItem[] = [
-  {
-    id: 'task-1',
-    title: 'Finish BST & Binary Tree Assignment',
-    description: 'Implement AVL rotation methods and pass all unit tests in Java.',
-    dueDate: new Date(Date.now() + 86400000).toISOString(),
-    dueTime: '17:00',
-    priority: 'high',
-    completed: false,
-    subject: 'Data Structures',
-    subtasks: [
-      { id: 'sub-1', title: 'Implement insert and delete node', completed: true },
-      { id: 'sub-2', title: 'Implement rebalance rotations', completed: false },
-      { id: 'sub-3', title: 'Write unit test suite', completed: false },
-    ],
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'task-2',
-    title: 'Review Linear Algebra Chapter 4',
-    description: 'Eigenvalues, Eigenvectors, and Matrix Diagonalization formulas.',
-    dueDate: new Date(Date.now() + 172800000).toISOString(),
-    dueTime: '14:30',
-    priority: 'medium',
-    completed: false,
-    subject: 'Mathematics',
-    subtasks: [],
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'task-3',
-    title: 'Submit Operating Systems Lab 2',
-    description: 'Process scheduling simulation with Round Robin & Priority Queue.',
-    dueDate: new Date(Date.now() + 259200000).toISOString(),
-    dueTime: '23:59',
-    priority: 'high',
-    completed: true,
-    subject: 'Operating Systems',
-    subtasks: [],
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'task-4',
-    title: 'Read UX Research Paper on Microinteractions',
-    description: 'Summarize key takeaways for Design project.',
-    dueDate: new Date(Date.now() + 345600000).toISOString(),
-    dueTime: '11:00',
-    priority: 'low',
-    completed: false,
-    subject: 'UI/UX Design',
-    subtasks: [],
-    createdAt: new Date().toISOString(),
-  },
-];
+export const defaultTasks: TaskItem[] = [];
 
-export const defaultNotes: NoteItem[] = [
-  {
-    id: 'note-1',
-    title: 'Data Structures: Tree & Graph Algorithms',
-    content: `<h2>Binary Search Trees &amp; Graphs</h2>
-<p><strong>Key Properties:</strong></p>
-<ul>
-  <li>Inorder traversal of BST gives sorted key sequence.</li>
-  <li>Time Complexity: <em>O(log N)</em> average for search/insert, <em>O(N)</em> worst case if unbalanced.</li>
-  <li>AVL Trees use height balance factor (-1, 0, +1) to ensure strictly <em>O(log N)</em>.</li>
-</ul>
-<h2>Graph Search Strategy</h2>
-<ul>
-  <li><strong>BFS</strong>: Queue based, shortest path in unweighted graphs.</li>
-  <li><strong>DFS</strong>: Stack/Recursion based, topological sorting.</li>
-</ul>`,
-    subject: 'Data Structures',
-    category: 'important',
-    tags: ['algorithms', 'midterm', 'cs'],
-    isPinned: true,
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: 'note-2',
-    title: 'Linear Algebra Quick Reference Sheet',
-    content: `<h2>Eigenvalues and Diagonalization</h2>
-<p><strong>Fundamental Equation:</strong> <em>A v = &lambda; v</em></p>
-<ol>
-  <li>Find characteristic equation: <strong>det(A - &lambda;I) = 0</strong></li>
-  <li>Solve for eigenvalues <em>&lambda;<sub>1</sub>, &lambda;<sub>2</sub></em></li>
-  <li>Find nullspace of <em>(A - &lambda;I)</em> for eigenvectors.</li>
-</ol>`,
-    subject: 'Mathematics',
-    category: 'general',
-    tags: ['math', 'exam-prep'],
-    isPinned: false,
-    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-];
+export const defaultNotes: NoteItem[] = [];
 
 export const defaultAlarms: AlarmItem[] = [];
 
@@ -193,91 +100,9 @@ export const defaultCustomTimers: CustomTimerItem[] = [
   },
 ];
 
-export const defaultSchedule: ClassSchedule[] = [
-  {
-    id: 'class-1',
-    subjectName: 'Data Structures & Algorithms',
-    code: 'CS 301',
-    instructor: 'Dr. Robert Chen',
-    location: 'Lecture Hall 4B',
-    dayOfWeek: 'Monday',
-    startTime: '10:00',
-    endTime: '11:30',
-    color: '#e040a0',
-  },
-  {
-    id: 'class-2',
-    subjectName: 'Linear Algebra',
-    code: 'MATH 240',
-    instructor: 'Prof. Sarah Jenkins',
-    location: 'Science Center 102',
-    dayOfWeek: 'Monday',
-    startTime: '13:00',
-    endTime: '14:30',
-    color: '#7c52aa',
-  },
-  {
-    id: 'class-3',
-    subjectName: 'Operating Systems',
-    code: 'CS 320',
-    instructor: 'Dr. Michael Taylor',
-    location: 'Tech Lab 3A',
-    dayOfWeek: 'Tuesday',
-    startTime: '09:00',
-    endTime: '10:30',
-    color: '#0096cc',
-  },
-  {
-    id: 'class-4',
-    subjectName: 'UI/UX Design Studio',
-    code: 'DES 110',
-    instructor: 'Elena Rostova',
-    location: 'Design Building 204',
-    dayOfWeek: 'Wednesday',
-    startTime: '11:00',
-    endTime: '13:00',
-    color: '#fdb45d',
-  },
-  {
-    id: 'class-5',
-    subjectName: 'Data Structures & Algorithms',
-    code: 'CS 301',
-    instructor: 'Dr. Robert Chen',
-    location: 'Lecture Hall 4B',
-    dayOfWeek: 'Wednesday',
-    startTime: '10:00',
-    endTime: '11:30',
-    color: '#e040a0',
-  },
-  {
-    id: 'class-6',
-    subjectName: 'Database Systems',
-    code: 'CS 340',
-    instructor: 'Prof. Alan Turing',
-    location: 'Hall B',
-    dayOfWeek: 'Thursday',
-    startTime: '14:00',
-    endTime: '15:30',
-    color: '#0096cc',
-  },
-];
+export const defaultSchedule: ClassSchedule[] = [];
 
-export const defaultSessions: FocusSession[] = [
-  {
-    id: 'sess-1',
-    subject: 'Data Structures',
-    durationMinutes: 25,
-    completedAt: new Date(Date.now() - 3600000 * 3).toISOString(),
-    type: 'pomodoro',
-  },
-  {
-    id: 'sess-2',
-    subject: 'Linear Algebra',
-    durationMinutes: 50,
-    completedAt: new Date(Date.now() - 86400000).toISOString(),
-    type: 'pomodoro',
-  },
-];
+export const defaultSessions: FocusSession[] = [];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -557,8 +382,44 @@ export const storage = {
     } catch {
       return false;
     }
-  }
+  },
+  resetAllData: () => {
+    storage.saveProfile({ ...defaultProfile });
+    storage.saveTasks([]);
+    storage.saveNotes([]);
+    storage.saveSchedule([]);
+    storage.saveSessions([]);
+    storage.saveAlarms([]);
+    storage.saveAttendance([]);
+    storage.saveAttendanceGoals([]);
+    storage.saveCustomTimers(defaultCustomTimers);
+    localStorage.removeItem(PENDING_CLOUD_SYNC_KEY);
+    localStorage.removeItem('study_flow_last_cloud_upload');
+    localStorage.removeItem('study_flow_last_cloud_download');
+    notifySync();
+  },
 };
+
+// Purge any old fake data left over in localStorage from earlier runs
+try {
+  const storedProfile = localStorage.getItem(STORAGE_KEYS.PROFILE);
+  const storedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
+  if (
+    (storedProfile && storedProfile.includes('Alex Vance')) ||
+    (storedTasks && storedTasks.includes('Finish BST & Binary Tree Assignment'))
+  ) {
+    localStorage.removeItem(STORAGE_KEYS.PROFILE);
+    localStorage.removeItem(STORAGE_KEYS.TASKS);
+    localStorage.removeItem(STORAGE_KEYS.NOTES);
+    localStorage.removeItem(STORAGE_KEYS.SCHEDULE);
+    localStorage.removeItem(STORAGE_KEYS.SESSIONS);
+    localStorage.removeItem(STORAGE_KEYS.ATTENDANCE);
+    localStorage.removeItem(STORAGE_KEYS.ATTENDANCE_GOALS);
+    localStorage.removeItem(STORAGE_KEYS.ALARMS);
+  }
+} catch {
+  // Ignore in SSR / restricted environments
+}
 
 export const subscribeToLocalChanges = (listener: () => void) => {
   localChangeListeners.add(listener);
@@ -570,12 +431,18 @@ const syncChannel = typeof window !== 'undefined' && 'BroadcastChannel' in windo
   ? new BroadcastChannel('studyflow_sync_channel')
   : null;
 
+let notifyTimer: ReturnType<typeof setTimeout> | null = null;
+
 function notifySync() {
   localStorage.setItem(PENDING_CLOUD_SYNC_KEY, '1');
-  localChangeListeners.forEach(listener => listener());
-  if (syncChannel) {
-    syncChannel.postMessage({ type: 'SYNC_UPDATE', timestamp: Date.now() });
-  }
+  if (notifyTimer) clearTimeout(notifyTimer);
+  notifyTimer = setTimeout(() => {
+    notifyTimer = null;
+    localChangeListeners.forEach(listener => listener());
+    if (syncChannel) {
+      syncChannel.postMessage({ type: 'SYNC_UPDATE', timestamp: Date.now() });
+    }
+  }, 400);
 }
 
 export function subscribeToSync(onSync: () => void) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { User, Mail, GraduationCap, Target, Clock, Save, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -14,6 +14,16 @@ export const Profile: React.FC = () => {
   const [weeklyGoalHours, setWeeklyGoalHours] = useState(profile.weeklyGoalHours);
   const [bio, setBio] = useState(profile.bio);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  useEffect(() => {
+    setName(profile.name);
+    setEmail(profile.email);
+    setMajor(profile.major);
+    setAcademicYear(profile.academicYear);
+    setTargetGpa(profile.targetGpa);
+    setWeeklyGoalHours(profile.weeklyGoalHours);
+    setBio(profile.bio);
+  }, [profile]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

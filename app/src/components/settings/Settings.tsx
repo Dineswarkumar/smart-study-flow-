@@ -22,7 +22,8 @@ import {
   BellRing,
   BellOff,
   Send,
-  Sparkles
+  Sparkles,
+  Trash2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
@@ -50,7 +51,8 @@ export const Settings: React.FC = () => {
     firebaseUser,
     signIn,
     createAccount,
-    signOut
+    signOut,
+    resetAllData
   } = useApp();
 
   const [importStatus, setImportStatus] = useState<string | null>(null);
@@ -61,6 +63,9 @@ export const Settings: React.FC = () => {
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncBusy, setSyncBusy] = useState(false);
   const [cloudActionMsg, setCloudActionMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
+  const [downloadConfirmOpen, setDownloadConfirmOpen] = useState(false);
 
   useEffect(() => {
     void getNotificationPermission().then(setNotificationPermission);
@@ -113,14 +118,27 @@ export const Settings: React.FC = () => {
     if (res.success) confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
   };
 
-  const handleDownloadFromCloud = async () => {
-    if (!window.confirm('Download latest cloud backup to this device? This will update your local notes, tasks, and classes with the cloud version.')) return;
+  const handleDownloadFromCloud = () => {
+    setDownloadConfirmOpen(true);
+  };
+
+  const executeDownloadFromCloud = async () => {
+    setDownloadConfirmOpen(false);
     setSyncBusy(true);
     setCloudActionMsg(null);
     const res = await downloadFromCloud();
     setSyncBusy(false);
     setCloudActionMsg({ type: res.success ? 'success' : 'error', text: res.message });
     if (res.success) confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+  };
+
+  const executeResetAllData = async () => {
+    setResetBusy(true);
+    await resetAllData();
+    setResetBusy(false);
+    setResetConfirmOpen(false);
+    setImportStatus('All app data has been completely wiped and reset to a clean state!');
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
   };
 
   const handleSafeMerge = async () => {
@@ -546,6 +564,21 @@ export const Settings: React.FC = () => {
             />
           </label>
         </div>
+
+        <div className="pt-2 border-t border-amber-200/50 dark:border-amber-900/40 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div>
+            <h4 className="text-xs font-black text-rose-600 dark:text-rose-400">Clear All App Data</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Permanently reset all tasks, notes, attendance and timetable to a fresh start.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setResetConfirmOpen(true)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white dark:text-rose-400 dark:hover:text-white border border-rose-300/40 dark:border-rose-800/40 font-black text-xs transition-all cursor-pointer active:scale-95 shadow-xs"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Reset All App Data</span>
+          </button>
+        </div>
       </div>
 
       {/* =========================================================================
@@ -589,6 +622,91 @@ export const Settings: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* =========================================================================
+          6. IN-APP CONFIRMATION MODALS (Native & Mobile Safe - Zero window.confirm)
+          ========================================================================= */}
+      {resetConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in" role="dialog" aria-modal="true">
+          <div className="relative overflow-hidden w-full max-w-md rounded-3xl p-6 sm:p-7 border border-rose-300/80 dark:border-rose-900/60 bg-gradient-to-br from-white via-rose-50/50 to-white dark:from-slate-900 dark:via-rose-950/20 dark:to-slate-900 shadow-2xl space-y-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 border border-rose-200 dark:border-rose-800">
+                <Trash2 className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-headline">
+                  Reset All Application Data?
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 leading-relaxed">
+                  This will permanently wipe all classes, timetable schedules, attendance records, tasks, study notes, and focus history. If cloud sync is connected, your cloud backup will also be reset to clean.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/40 text-[11px] font-bold text-rose-700 dark:text-rose-300">
+              ⚠️ Warning: This action cannot be undone.
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={resetBusy}
+                onClick={() => setResetConfirmOpen(false)}
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={resetBusy}
+                onClick={() => void executeResetAllData()}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-50"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{resetBusy ? 'Wiping Everything...' : 'Yes, Wipe Everything Clean'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {downloadConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in" role="dialog" aria-modal="true">
+          <div className="relative overflow-hidden w-full max-w-md rounded-3xl p-6 sm:p-7 border border-sky-300/80 dark:border-sky-900/60 bg-gradient-to-br from-white via-sky-50/50 to-white dark:from-slate-900 dark:via-sky-950/20 dark:to-slate-900 shadow-2xl space-y-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-sky-100 dark:bg-sky-950/80 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-200 dark:border-sky-800">
+                <CloudDownload className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-headline">
+                  Download Cloud Backup?
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 leading-relaxed">
+                  This will download the latest cloud snapshot and update your local notes, tasks, attendance records, and classes with the cloud version.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setDownloadConfirmOpen(false)}
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void executeDownloadFromCloud()}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/30 active:scale-95 transition-all"
+              >
+                <CloudDownload className="w-3.5 h-3.5" />
+                <span>Yes, Download Cloud Data</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
