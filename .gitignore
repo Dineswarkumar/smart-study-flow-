@@ -48,3 +48,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Planning & Local Agent State
+.planning/
